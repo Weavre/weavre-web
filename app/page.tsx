@@ -42,8 +42,9 @@ export default function Home() {
             padding: 12,
             borderRadius: 20,
             border: "none",
-            width: 260,
+            width: 240,
             outline: "none",
+            color: "#0d0220ff",
           }}
         />
         <button
