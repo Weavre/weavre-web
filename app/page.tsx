@@ -1,4 +1,32 @@
+'use client'
+import { useState } from 'react'
+
 export default function Home() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('submitting')
+    
+    try {
+      const response = await fetch('/api/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+      
+      if (response.ok) {
+        setStatus('success')
+        setEmail('')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <main
       style={{
@@ -28,14 +56,11 @@ export default function Home() {
       </p>
 
       {/* Email signup form */}
-      <form
-        action="https://formspree.io/f/xpwjvdpb"
-        method="POST"
-        style={{ display: "flex", gap: 10 }}
-      >
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: 10 }}>
         <input
           type="email"
-          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           required
           style={{
@@ -49,6 +74,7 @@ export default function Home() {
         />
         <button
           type="submit"
+          disabled={status === 'submitting'}
           style={{
             background: "linear-gradient(135deg, #8133ffff, #4da9ffff)",
             border: "none",
@@ -59,9 +85,16 @@ export default function Home() {
             cursor: "pointer",
           }}
         >
-          Notify Me
+          {status === 'submitting' ? 'Saving...' : 'Notify Me'}
         </button>
       </form>
+      
+      {status === 'success' && (
+        <p style={{ color: '#4da9ffff', marginTop: 10 }}>Thanks! We'll notify you.</p>
+      )}
+      {status === 'error' && (
+        <p style={{ color: '#ff4d4d', marginTop: 10 }}>Something went wrong. Try again.</p>
+      )}
 
       <div
         style={{
